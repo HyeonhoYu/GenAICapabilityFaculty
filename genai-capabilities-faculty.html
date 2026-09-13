@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>What Generative AI Can Actually Do</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=Archivo:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --ink:#16283C;
+    --ink-soft:#42566B;
+    --paper:#F3F5F1;
+    --card:#FFFFFF;
+    --rule:#D9DED6;
+    --track:#3F6C8A;
+    --sage:#4F7A63;
+    --pen:#B34434;
+    --serif:'Newsreader','Iowan Old Style','Palatino Linotype',Palatino,Georgia,serif;
+    --sans:'Archivo','Avenir Next','Segoe UI',system-ui,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+  @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
+  body{margin:0;background:var(--paper);color:var(--ink);
+    font-family:var(--serif);font-size:18px;line-height:1.65}
+  a{color:inherit}
+  button{font-family:var(--sans);cursor:pointer}
+  :focus-visible{outline:2px solid var(--ink);outline-offset:3px}
+
+  .topbar{position:sticky;top:0;z-index:20;background:var(--paper);border-bottom:1px solid var(--rule)}
+  .topbar-in{max-width:1140px;margin:0 auto;padding:14px 24px;display:flex;align-items:center;gap:18px}
+  .wordmark{font-family:var(--sans);font-weight:600;font-size:15px;letter-spacing:-.01em;
+    text-decoration:none;line-height:1.2}
+  .wordmark span{display:block;font-weight:400;color:var(--ink-soft);font-size:12.5px}
+  .meter{margin-left:auto;display:flex;align-items:center;gap:10px;
+    font-family:var(--sans);font-size:12.5px;color:var(--ink-soft)}
+  .meter-track{width:84px;height:6px;background:var(--rule);border-radius:3px;overflow:hidden}
+  .meter-fill{height:100%;width:0;background:var(--track);transition:width .4s ease}
+
+  .shell{max-width:1140px;margin:0 auto;padding:0 24px 90px;display:grid;grid-template-columns:1fr}
+  @media(min-width:1000px){
+    .shell{grid-template-columns:244px 1fr;gap:60px;padding-top:8px}
+    .rail{display:block}
+  }
+  .rail{display:none;position:sticky;top:74px;align-self:start;padding:30px 0 30px;
+    font-family:var(--sans);font-size:13px;max-height:calc(100vh - 90px);overflow-y:auto}
+  .rail h2{font-size:12px;font-weight:600;color:var(--ink-soft);margin:0 0 10px}
+  .rail ul{list-style:none;margin:0 0 22px;padding:0;border-left:1px solid var(--rule)}
+  .rail li{position:relative}
+  .rail a{display:block;padding:6px 0 6px 15px;text-decoration:none;color:var(--ink-soft);
+    border-left:2px solid transparent;margin-left:-1px;line-height:1.35}
+  .rail a:hover{color:var(--ink)}
+  .rail a.on{color:var(--ink);font-weight:600;border-left-color:var(--track)}
+  .rail a.did::after{content:"";position:absolute;left:-4px;top:14px;width:7px;height:7px;
+    border-radius:50%;background:var(--sage)}
+
+  main{padding:30px 0 0;min-width:0}
+  .col{max-width:680px}
+
+  .hero{padding:22px 0 38px;border-bottom:1px solid var(--rule)}
+  .kicker{font-family:var(--sans);font-size:13px;color:var(--ink-soft);margin:0 0 10px}
+  .hero h1{font-weight:500;font-size:clamp(34px,5.4vw,52px);line-height:1.07;
+    letter-spacing:-.02em;margin:0 0 18px;max-width:15ch}
+  .hero p{margin:0 0 16px;max-width:58ch;color:var(--ink-soft);font-size:19px}
+
+  h2.part{font-family:var(--sans);font-size:12.5px;font-weight:600;color:var(--ink-soft);
+    margin:64px 0 0;padding-bottom:8px;border-bottom:2px solid var(--ink)}
+  h2.part:first-of-type{margin-top:52px}
+
+  .plain-h2{font-family:var(--sans);font-size:13px;font-weight:600;color:var(--ink-soft);margin:0 0 8px}
+  section.block{margin:44px 0 0}
+  section.block > p{margin:0 0 16px;max-width:64ch}
+  section.block h3{font-weight:600;font-size:21px;margin:0 0 10px;letter-spacing:-.01em}
+
+  /* task index */
+  .tasks{border-top:1px solid var(--rule);margin-top:18px}
+  .tasks a{display:grid;grid-template-columns:1fr auto;gap:16px;align-items:baseline;
+    padding:11px 0;border-bottom:1px solid var(--rule);text-decoration:none;font-size:17px}
+  .tasks a:hover .tk{text-decoration:underline;text-underline-offset:3px}
+  .tasks .go{font-family:var(--sans);font-size:12px;color:var(--ink-soft);white-space:nowrap}
+
+  /* capability entries */
+  .cap{padding:38px 0 6px;border-bottom:1px solid var(--rule)}
+  .cap-n{font-family:var(--sans);font-size:12.5px;color:var(--ink-soft);margin:0 0 6px}
+  .cap h3{font-weight:500;font-size:26px;line-height:1.2;letter-spacing:-.015em;margin:0 0 12px}
+  .cap > p{margin:0 0 18px;max-width:64ch}
+  .cap ul{margin:0 0 18px;padding-left:20px;max-width:62ch}
+  .cap li{margin-bottom:7px}
+
+  .facts4{border-top:2px solid var(--ink);margin:22px 0 24px}
+  .facts4 > div{display:grid;grid-template-columns:1fr;gap:3px;padding:13px 0;
+    border-bottom:1px solid var(--rule)}
+  @media(min-width:640px){.facts4 > div{grid-template-columns:172px 1fr;gap:20px}}
+  .facts4 dt{font-family:var(--sans);font-weight:600;font-size:13px;margin:0;padding-top:3px;
+    color:var(--ink-soft)}
+  .facts4 dd{margin:0;font-size:17px;line-height:1.55;max-width:52ch}
+  .facts4 dd.risk{color:var(--pen)}
+
+  .try{border-left:3px solid var(--sage);padding:2px 0 2px 18px;margin:22px 0 20px;max-width:62ch}
+  .try-h{font-family:var(--sans);font-size:12.5px;font-weight:600;color:var(--sage);margin:0 0 8px}
+  .chk{display:flex;gap:11px;align-items:flex-start;cursor:pointer;font-size:17px;line-height:1.5}
+  .chk input{appearance:none;-webkit-appearance:none;flex:none;width:17px;height:17px;margin:5px 0 0;
+    border:1.5px solid var(--ink-soft);border-radius:2px;background:var(--card);position:relative}
+  .chk input:checked{background:var(--sage);border-color:var(--sage)}
+  .chk input:checked::after{content:"";position:absolute;left:5px;top:1px;width:4px;height:9px;
+    border:solid #fff;border-width:0 2px 2px 0;transform:rotate(45deg)}
+  .chk input:checked ~ span{color:var(--ink-soft);text-decoration:line-through;
+    text-decoration-color:var(--rule)}
+
+  .prompt{margin:14px 0 0;background:var(--card);border:1px solid var(--rule);border-radius:2px;
+    padding:13px 15px;font-family:var(--sans);font-size:14px;line-height:1.55;color:var(--ink-soft);
+    position:relative}
+  .prompt b{font-weight:600;color:var(--ink);display:block;font-size:11.5px;margin-bottom:6px}
+  .copy{position:absolute;top:9px;right:9px;background:transparent;border:1px solid var(--rule);
+    border-radius:2px;color:var(--ink-soft);font-size:11.5px;padding:3px 8px}
+  .copy:hover{border-color:var(--ink);color:var(--ink)}
+
+  .tools{font-family:var(--sans);font-size:13px;line-height:1.6;color:var(--ink-soft);
+    border-top:1px solid var(--rule);padding-top:12px;margin:24px 0 0;max-width:60ch}
+  .tools b{font-weight:600;color:var(--ink);font-size:11.5px;display:block;margin-bottom:5px}
+
+  .note{border-left:3px solid;padding:2px 0 2px 18px;margin:24px 0;max-width:62ch}
+  .note.warn{border-color:var(--pen)}
+  .note.flat{border-color:var(--rule)}
+  .note h4{font-family:var(--sans);font-size:12.5px;font-weight:600;margin:0 0 6px}
+  .note.warn h4{color:var(--pen)}
+  .note.flat h4{color:var(--ink-soft)}
+  .note p{margin:0 0 10px;font-size:17px}
+  .note p:last-child{margin-bottom:0}
+
+  .stale{background:var(--card);border:1px solid var(--rule);border-left:3px solid var(--track);
+    border-radius:2px;padding:18px 20px;margin:30px 0 0;max-width:62ch}
+  .stale h4{font-family:var(--sans);font-size:12.5px;font-weight:600;color:var(--track);margin:0 0 7px}
+  .stale p{margin:0 0 10px;font-size:16.5px;line-height:1.55}
+  .stale p:last-child{margin:0}
+
+  footer{max-width:1140px;margin:0 auto;padding:26px 24px 60px;border-top:1px solid var(--rule);
+    font-family:var(--sans);font-size:12.5px;color:var(--ink-soft)}
+  footer .row{display:flex;flex-wrap:wrap;gap:14px;justify-content:space-between;align-items:center}
+  .linkish{background:none;border:0;padding:0;color:var(--ink-soft);font-size:12.5px;
+    text-decoration:underline;text-underline-offset:2px}
+  .linkish:hover{color:var(--pen)}
+
+  .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);
+    color:var(--paper);font-family:var(--sans);font-size:13px;padding:10px 18px;border-radius:2px;
+    z-index:50;opacity:0;pointer-events:none;transition:opacity .25s}
+  .toast.show{opacity:1}
+
+  @media print{
+    .topbar,.rail,footer,.copy,.toast{display:none!important}
+    body{background:#fff}
+    .shell{display:block;padding:0}
+    .cap{break-inside:avoid}
+  }
+</style>
+</head>
+
+<body>
+<header class="topbar">
+  <div class="topbar-in">
+    <a class="wordmark" href="#top">What Generative AI Can Actually Do<span>A capability reference for university faculty and staff</span></a>
+    <div class="meter">
+      <span id="meterText">0 of 14 tried</span>
+      <div class="meter-track"><div class="meter-fill" id="meterFill"></div></div>
+    </div>
+  </div>
+</header>
+
+<div class="shell">
+  <nav class="rail" aria-label="Contents">
+    <h2>Start here</h2>
+    <ul>
+      <li><a href="#how">How to use this page</a></li>
+      <li><a href="#index">I want to...</a></li>
+    </ul>
+    <h2>Text and thinking</h2>
+    <ul>
+      <li><a href="#c1">1. Asking and searching</a></li>
+      <li><a href="#c2">2. Explaining and tutoring</a></li>
+      <li><a href="#c3">3. Drafting and revising</a></li>
+      <li><a href="#c4">4. Structuring and transforming</a></li>
+    </ul>
+    <h2>Images</h2>
+    <ul>
+      <li><a href="#c5">5. Generating images</a></li>
+      <li><a href="#c6">6. Editing images you have</a></li>
+      <li><a href="#c7">7. When not to use an image model</a></li>
+    </ul>
+    <h2>Audio and video</h2>
+    <ul>
+      <li><a href="#c8">8. Speech and transcription</a></li>
+      <li><a href="#c9">9. Video</a></li>
+    </ul>
+    <h2>Documents, data, code</h2>
+    <ul>
+      <li><a href="#c10">10. Your own documents</a></li>
+      <li><a href="#c11">11. Data and spreadsheets</a></li>
+      <li><a href="#c12">12. Code without coding</a></li>
+    </ul>
+    <h2>Things that keep running</h2>
+    <ul>
+      <li><a href="#c13">13. Custom assistants</a></li>
+      <li><a href="#c14">14. Agents and automation</a></li>
+    </ul>
+    <h2>Before you go</h2>
+    <ul>
+      <li><a href="#before">Before you use any of this</a></li>
+      <li><a href="#aging">How this page ages</a></li>
+    </ul>
+  </nav>
+
+  <main id="top">
+  <div class="col">
+
+    <section class="hero">
+      <p class="kicker">For faculty and staff across all disciplines and offices</p>
+      <h1>What generative AI can actually do</h1>
+      <p>Fourteen things these systems do, what each one is worth, and how each one fails. Organized by capability rather than by product, because products are renamed and retired on a schedule that has nothing to do with your work.</p>
+      <p>This is the practical companion to the AI literacy course. That one explains how the tools work and where they break. This one tells you what to do with them on a Tuesday.</p>
+    </section>
+
+    <section class="block" id="how">
+      <h2 class="plain-h2">How to use this page</h2>
+      <p>Nothing here is sequential. Use the index below to jump to what you are trying to do, or scan the rail and read whatever looks useful. Every entry answers the same four questions in the same order, so you can compare two capabilities without reading both in full.</p>
+      <p>Each entry ends with one concrete thing to try in about ten minutes. Tick them off as you go; the page remembers. Fourteen entries, fourteen small experiments, and you will have a real opinion about which of these belongs in your work rather than a general impression that AI is powerful.</p>
+      <div class="note flat">
+        <h4>On tool names</h4>
+        <p>Every product named on this page carries the date it was checked. Treat the names as examples of a category, not as recommendations, and expect roughly a third of them to be wrong within a year. The capability descriptions will still hold.</p>
+      </div>
+    </section>
+
+    <section class="block" id="index">
+      <h2 class="plain-h2">I want to...</h2>
+      <div class="tasks">
+        <a href="#c1"><span class="tk">Find out what the current research or policy actually says</span><span class="go">1</span></a>
+        <a href="#c2"><span class="tk">Explain a hard concept three different ways</span><span class="go">2</span></a>
+        <a href="#c3"><span class="tk">Draft a rubric, a question bank, or a difficult email</span><span class="go">3</span></a>
+        <a href="#c4"><span class="tk">Turn my messy notes into an outline, a table, or slides</span><span class="go">4</span></a>
+        <a href="#c5"><span class="tk">Make an illustration for a lecture or a flyer</span><span class="go">5</span></a>
+        <a href="#c6"><span class="tk">Fix a photo I already have, or remove its background</span><span class="go">6</span></a>
+        <a href="#c7"><span class="tk">Make a diagram, a chart, or a graphic with text in it</span><span class="go">7</span></a>
+        <a href="#c8"><span class="tk">Caption a recorded lecture, or produce an audio version of a reading</span><span class="go">8</span></a>
+        <a href="#c9"><span class="tk">Produce a short video without filming anything</span><span class="go">9</span></a>
+        <a href="#c10"><span class="tk">Ask questions of a long report, a handbook, or a stack of PDFs</span><span class="go">10</span></a>
+        <a href="#c11"><span class="tk">Clean a spreadsheet or code open-ended survey responses</span><span class="go">11</span></a>
+        <a href="#c12"><span class="tk">Automate a repetitive task without knowing how to program</span><span class="go">12</span></a>
+        <a href="#c13"><span class="tk">Set something up once so my whole department can use it</span><span class="go">13</span></a>
+        <a href="#c14"><span class="tk">Have AI do a multi-step task on its own</span><span class="go">14</span></a>
+      </div>
+    </section>
+
+    <h2 class="part">Part 1. Text and thinking</h2>
+
+    <article class="cap" id="c1">
+      <p class="cap-n">Capability 1</p>
+      <h3>Asking and searching</h3>
+      <p>People say they searched with AI and mean three genuinely different things. Telling them apart is the single highest-value distinction on this page, because one of the three is the least reliable way to get a fact and the other two are among the most useful things here.</p>
+      <ul>
+        <li><b>Answering from memory.</b> You ask, the model answers from patterns in training text. No sources, no live data, and the highest risk of a confident invention. Good for explanation, bad for facts.</li>
+        <li><b>Grounded search.</b> The tool runs actual web searches, reads results, and answers with links. Seconds rather than minutes. This is what you want for most questions.</li>
+        <li><b>Deep research.</b> An agent plans a line of inquiry, runs many searches over several minutes, reads dozens of pages, and returns a structured report with citations. Worth it for a literature scan, a policy landscape, or a competitor review, and overkill for anything smaller.</li>
+      </ul>
+      <dl class="facts4">
+        <div><dt>What it does</dt><dd>Retrieves and synthesizes public information, with a source trail you can follow.</dd></div>
+        <div><dt>When it is worth it</dt><dd>Orientation in an unfamiliar area, standards and policy language, a first pass at a literature set, scanning what peer institutions do.</dd></div>
+        <div><dt class="risk">How it breaks</dt><dd class="risk">Fabricated or mismatched citations, where the link is real but does not say what the summary claims. Stale results presented as current. Confident synthesis built on three bad sources. Coverage you cannot verify, which is why this never replaces a systematic search.</dd></div>
+        <div><dt>What it costs</dt><dd>Grounded search is free in most tools. Deep research generally sits behind a paid tier and is metered per month. Your real cost is the time to open every citation that matters.</dd></div>
+      </dl>
+      <div class="note warn">
+        <h4>The check that takes two minutes</h4>
+        <p>Open the citations, not just the report. The common failure is not a made-up link, it is a real link that does not support the sentence attached to it. If a claim is going into something you sign, read the source.</p>
+      </div>
+      <div class="try">
+        <p class="try-h">Try it in ten minutes</p>
+        <label class="chk"><input type="checkbox" data-k="c1"><span>Run one question you already know the answer to through a grounded search tool, then open every citation and check whether it says what the summary claims.</span></label>
+        <div class="prompt"><button class="copy">Copy</button><b>Starter prompt</b>Summarize what changed in [policy or standard] in the last two years. For each claim, give the specific source and the date. Flag anything where sources disagree, and say explicitly what you could not find.</div>
+      </div>
+      <p class="tools"><b>Tools, checked September 2026</b>Grounded search is built into ChatGPT, Gemini, Claude, and Perplexity. For deep research modes: Perplexity Deep Research is the fastest and puts citations inline; ChatGPT Deep Research runs longest and produces the most structured report; Gemini Deep Research browses very widely and exports to Google Docs; Claude Research is strong on synthesis. All four sit in roughly the same paid tier, with monthly limits that differ by plan.</p>
+    </article>
+
+    <article class="cap" id="c2">
+      <p class="cap-n">Capability 2</p>
+      <h3>Explaining and tutoring</h3>
+      <p>This is what a language model does best, and it is also the use most likely to be dismissed as trivial. It is not trivial. Being able to get four different explanations of the same idea in ninety seconds, at four different levels, changes what you can prepare in an afternoon.</p>
+      <dl class="facts4">
+        <div><dt>What it does</dt><dd>Restates a concept at a chosen level, generates analogies, anticipates the misconceptions students bring, and will run a question-led dialogue instead of lecturing if you ask it to.</dd></div>
+        <div><dt>When it is worth it</dt><dd>Preparing to teach something outside your specialty, finding an analogy that works for a class that did not get the first one, writing the explanation you will give three students in office hours this week, learning a method a reviewer asked you to use.</dd></div>
+        <div><dt class="risk">How it breaks</dt><dd class="risk">Subject errors delivered in the same fluent register as the correct parts. Analogies that are memorable and wrong, which are worse than no analogy. It also tends to agree with whatever framing you bring, so it will not tell you your mental model is the problem.</dd></div>
+        <div><dt>What it costs</dt><dd>Free tiers are adequate. The cost is that you must know the material well enough to catch errors, which means this is strongest exactly where you need it least.</dd></div>
+      </dl>
+      <div class="try">
+        <p class="try-h">Try it in ten minutes</p>
+        <label class="chk"><input type="checkbox" data-k="c2"><span>Take the concept your students reliably fail on. Ask for three explanations pitched at different levels, plus the three misconceptions most likely to be behind the failure.</span></label>
+        <div class="prompt"><button class="copy">Copy</button><b>Starter prompt</b>I teach [course] to [who]. They consistently misunderstand [concept]. Give me three explanations: one using a concrete everyday analogy, one working from a worked example, one from first principles. Then list the three misconceptions most likely causing the confusion and a diagnostic question for each.</div>
+      </div>
+      <p class="tools"><b>Tools, checked September 2026</b>Any general assistant does this: ChatGPT, Claude, Gemini, Copilot. The differences that matter here are tone and length, not capability. Ask for a Socratic mode explicitly if you want questions instead of answers.</p>
+    </article>
+
+    <article class="cap" id="c3">
+      <p class="cap-n">Capability 3</p>
+      <h3>Drafting and revising</h3>
+      <p>The highest-volume use in a university, and the one that saves the most hours per week for both faculty and staff. The rule that keeps it safe is simple: it produces a draft you will judge, never a decision you will transmit.</p>
+      <ul>
+        <li>Teaching: rubrics, question banks, assignment sheets, feedback language you will edit per student, syllabus sections.</li>
+        <li>Research and service: cover letters, data availability statements, committee charges, meeting agendas and minutes from your own notes.</li>
+        <li>Staff work: student-facing announcements, advising templates, event descriptions, process documentation, a difficult email you have rewritten four times.</li>
+      </ul>
+      <dl class="facts4">
+        <div><dt>What it does</dt><dd>Produces a competent first draft in a specified format, register, and length, and rewrites yours on request.</dd></div>
+        <div><dt>When it is worth it</dt><dd>Any document where the shape is conventional and the content is yours. It is most valuable on the writing you resent, not the writing you care about.</dd></div>
+        <div><dt class="risk">How it breaks</dt><dd class="risk">It produces smooth institutional prose that says slightly less than you meant. It invents plausible specifics, such as a deadline or a policy clause, unless you supply them. And a message written entirely by a model reads like one, particularly in anything meant to sound personal.</dd></div>
+        <div><dt>What it costs</dt><dd>Free tiers handle this. The real cost is editing time, which is usually smaller than drafting time but is never zero. If you find yourself rewriting every sentence, the task was not a drafting task.</dd></div>
+      </dl>
+      <div class="note warn">
+        <h4>Two things not to delegate</h4>
+        <p>A recommendation letter, because its value is your firsthand knowledge and delegating it misrepresents what the reader is being given. And any message conveying a decision about a specific person, which should carry the reasoning of whoever made the decision.</p>
+      </div>
+      <div class="try">
+        <p class="try-h">Try it in ten minutes</p>
+        <label class="chk"><input type="checkbox" data-k="c3"><span>Take a document you wrote last month. Ask for a draft of the same thing using the structure below, and compare it honestly against what you produced.</span></label>
+        <div class="prompt"><button class="copy">Copy</button><b>Starter prompt</b>Role: you are writing as [your role]. Context: [audience, what they already know, constraints]. Task: draft [one specific document]. Constraints: [length, reading level, tone, what to avoid, required elements]. Format: [table, numbered list, email with subject line].</div>
+      </div>
+      <p class="tools"><b>Tools, checked September 2026</b>ChatGPT, Claude, Gemini, and Microsoft Copilot all do this. Copilot and Gemini have the advantage of sitting inside Word, Outlook, and Google Docs, which removes the copy and paste step and, more importantly, may keep the text inside your institutional tenant. Check which tenant your institution licensed.</p>
+    </article>
+
+    <article class="cap" id="c4">
+      <p class="cap-n">Capability 4</p>
+      <h3>Structuring and transforming</h3>
+      <p>The lowest-risk category on this page, and consistently underused. You supply the content and ask only for a change of shape. Since nothing new is being asserted about the world, there is almost nothing to hallucinate.</p>
+      <dl class="facts4">
+        <div><dt>What it does</dt><dd>Converts what you already have into another form: notes into an outline, an outline into slide text, a transcript into action items, prose into a comparison table, a long document into a one-page brief, a list into a structured file format.</dd></div>
+        <div><dt>When it is worth it</dt><dd>After every meeting, every messy brainstorm, and every time you have the substance but not the shape. Also for accessibility work, such as turning a dense paragraph into plain-language bullets.</dd></div>
+        <div><dt class="risk">How it breaks</dt><dd class="risk">Quiet omission. Summaries drop the qualification that made a sentence true, and a restructure can lose the one caveat you most needed to keep. Check what is missing rather than what is wrong.</dd></div>
+        <div><dt>What it costs</dt><dd>Essentially nothing. This is the first thing to try if you are unconvinced any of this is useful.</dd></div>
+      </dl>
+      <div class="try">
+        <p class="try-h">Try it in ten minutes</p>
+        <label class="chk"><input type="checkbox" data-k="c4"><span>Paste your notes from the last meeting you ran and ask for three outputs: a summary, a decision list, and an action table with owners. Then check what got dropped.</span></label>
+        <div class="prompt"><button class="copy">Copy</button><b>Starter prompt</b>Here are my raw notes. Produce three things: a five-sentence summary, a list of decisions that were actually made as opposed to discussed, and a table of action items with owner and deadline where stated. Mark anything ambiguous as unclear rather than guessing.</div>
+      </div>
+      <p class="tools"><b>Tools, checked September 2026</b>Any general assistant. If the source is a meeting recording rather than notes, start at capability 8.</p>
+    </article>
+
+    <h2 class="part">Part 2. Images</h2>
+
+    <article class="cap" id="c5">
+      <p class="cap-n">Capability 5</p>
+      <h3>Generating images from text</h3>
+      <p>You describe a picture and get one, usually in under a minute, usually four variants. The quality question was settled some time ago; the useful questions now are what you can control and what you are allowed to do with the result.</p>
+      <p>What a prompt actually controls: subject, setting, style, composition and camera angle, lighting, colour palette, and aspect ratio. Naming all seven gets you far closer than a long descriptive sentence does. Iteration beats prompt engineering, so generate, say what is wrong, and regenerate.</p>
+      <dl class="facts4">
+        <div><dt>What it does</dt><dd>Produces original raster images from a description, in a requested style and ratio, and will vary or extend one you like.</dd></div>
+        <div><dt>When it is worth it</dt><dd>Lecture and slide illustration where stock photography is generic or expensive, event flyers, scenario images for case-based teaching, placeholder art while a real design is commissioned, and visual prompts for discussion.</dd></div>
+        <div><dt class="risk">How it breaks</dt><dd class="risk">Text inside images is unreliable in most models. Counting is unreliable, so six people requested may arrive as five. Scientific and historical detail is decorative rather than accurate, which makes generated images a poor choice for anything students will study closely. And output that imitates a living artist's style is a professional and reputational problem even where it is legally unsettled.</dd></div>
+        <div><dt>What it costs</dt><dd>Free tiers exist in most consumer assistants with daily caps. Paid tiers are typically around twenty dollars a month. The unpriced cost is rights: in the United States, purely AI-generated images are generally not eligible for copyright protection, and training-data provenance varies enormously between models.</dd></div>
+      </dl>
+      <div class="note warn">
+        <h4>One line that does not move</h4>
+        <p>Never generate images of identifiable students, colleagues, or anyone else, and never upload their photographs to an image tool for editing or restyling. A likeness is theirs, not the institution's, and no pedagogical purpose justifies it.</p>
+      </div>
+      <div class="try">
+        <p class="try-h">Try it in ten minutes</p>
+        <label class="chk"><input type="checkbox" data-k="c5"><span>Generate one illustration for a lecture you are giving this term. Then ask for the same image in a different style and a different aspect ratio, so you learn what the controls actually do.</span></label>
+        <div class="prompt"><button class="copy">Copy</button><b>Starter prompt</b>Subject: [what is happening]. Setting: [where]. Style: [flat vector illustration, editorial photograph, ink drawing]. Composition: [wide shot, close up, overhead]. Lighting: [soft daylight, dramatic side light]. Palette: [two or three colours]. Aspect ratio: 16:9. No text in the image.</div>
+      </div>
+      <p class="tools"><b>Tools, checked September 2026</b>OpenAI's GPT Image line leads blind-preference rankings and is built into ChatGPT. Google's Nano Banana models sit inside Gemini and are the strongest free option. Midjourney V8 remains the aesthetic choice for art-directed work. Adobe Firefly is trained on licensed and public-domain content, which makes it the safer pick when provenance matters for institutional publishing. Ideogram is the one to use when the image must contain legible text, and Recraft when you need vector output.</p>
+    </article>
+
+    <article class="cap" id="c6">
+      <p class="cap-n">Capability 6</p>
+      <h3>Editing images you already have</h3>
+      <p>Less discussed than generation and far more frequently useful in a university. Most of what an office actually needs is not a new image but a fix to an existing one.</p>
+      <dl class="facts4">
+        <div><dt>What it does</dt><dd>Removes or replaces backgrounds, erases an unwanted object, extends an image to fit a different ratio, increases resolution on something too small, adjusts lighting, and changes one described element while leaving the rest alone.</dd></div>
+        <div><dt>When it is worth it</dt><dd>A departmental headshot with a distracting background, a conference photo that needs to become a banner, a scanned figure that is too low-resolution for print, a slide image that needs the ratio changed rather than cropped.</dd></div>
+        <div><dt class="risk">How it breaks</dt><dd class="risk">Edits drift. Ask to change one element and the model may quietly repaint the rest. Extended regions invent plausible detail that was never there. And editing a photograph of a real event moves you from correcting an image to misrepresenting one, which matters for anything documentary, archival, or evidentiary.</dd></div>
+        <div><dt>What it costs</dt><dd>Background removal and upscaling are free in many tools. Always keep the original file, because these edits are not reversible from the output.</dd></div>
+      </dl>
+      <div class="try">
+        <p class="try-h">Try it in ten minutes</p>
+        <label class="chk"><input type="checkbox" data-k="c6"><span>Take a real image you needed to fix recently. Remove its background and extend it to a 16:9 banner, then compare the invented edges against the original.</span></label>
+      </div>
+      <p class="tools"><b>Tools, checked September 2026</b>Conversational editing works in ChatGPT and Gemini: upload and describe the change. For layers, batch processing, and RAW files, Photoshop and Lightroom remain the tools. Canva covers most institutional design work and includes background removal. Photoroom is the quick single-purpose option.</p>
+    </article>
+
+    <article class="cap" id="c7">
+      <p class="cap-n">Capability 7</p>
+      <h3>When an image model is the wrong tool</h3>
+      <p>Worth its own entry because the failure is so common. If the thing you want has meaning encoded in its structure, an image generator is the wrong instrument, and no amount of prompting will fix that.</p>
+      <ul>
+        <li><b>Diagrams and flowcharts.</b> The arrows have to mean something. Ask an assistant to write the diagram as code instead, in Mermaid or SVG, which produces a correct, editable, and scalable result.</li>
+        <li><b>Charts from data.</b> Give the numbers to a tool that plots them. A generated image of a bar chart has bars of arbitrary height.</li>
+        <li><b>Anything with required text.</b> Labels, posters with specific wording, certificates. Generate the background separately and set the type in a layout tool.</li>
+        <li><b>Logos and official marks.</b> Your institution has brand standards and existing assets.</li>
+      </ul>
+      <dl class="facts4">
+        <div><dt>What to do instead</dt><dd>Describe the structure to a general assistant and ask for Mermaid, SVG, or a chart specification. You get something correct, editable, version-controllable, and readable by screen readers, none of which is true of a generated picture.</dd></div>
+        <div><dt class="risk">How it breaks</dt><dd class="risk">Code-based diagrams fail visibly rather than silently, which is the point. A wrong diagram will not render; a wrong generated image renders beautifully.</dd></div>
+      </dl>
+      <div class="try">
+        <p class="try-h">Try it in ten minutes</p>
+        <label class="chk"><input type="checkbox" data-k="c7"><span>Take a process you explain every term. Ask for it as a Mermaid flowchart, paste the result into a Mermaid viewer, and compare it to what an image model produces from the same description.</span></label>
+        <div class="prompt"><button class="copy">Copy</button><b>Starter prompt</b>Turn this process into a Mermaid flowchart. Keep node labels under six words. Show the decision points as diamonds and mark the two most common failure paths. Then give me the same thing as clean SVG I can edit.</div>
+      </div>
+      <p class="tools"><b>Tools, checked September 2026</b>Any general assistant writes Mermaid and SVG. Recraft is the exception among image models in generating true vector output. For charts, hand the data to a spreadsheet or to a code tool rather than to an image model.</p>
+    </article>
+
+    <h2 class="part">Part 3. Audio and video</h2>
+
+    <article class="cap" id="c8">
+      <p class="cap-n">Capability 8</p>
+      <h3>Speech, transcription, and translation</h3>
+      <p>The highest ratio of usefulness to attention on this page. Transcription in particular has quietly become accurate enough that not using it is now the odd choice, and it carries real accessibility value rather than just convenience.</p>
+      <ul>
+        <li><b>Transcription.</b> Recorded lectures, interviews, meetings, and office hours turned into searchable text with speaker labels and timestamps.</li>
+        <li><b>Captions and subtitles.</b> Generated from the transcript, then corrected. This is an accessibility obligation at most institutions, not an enhancement.</li>
+        <li><b>Text to speech.</b> An audio version of a reading, a written lecture, or a document, in a synthetic voice.</li>
+        <li><b>Translation and dubbing.</b> A recorded message rendered in another language, useful for international student and family communication.</li>
+      </ul>
+      <dl class="facts4">
+        <div><dt>What it does</dt><dd>Converts between speech and text in both directions, across a hundred or so languages, with speaker separation and word-level timing.</dd></div>
+        <div><dt>When it is worth it</dt><dd>Captioning recorded teaching, making a searchable archive of your own lectures, transcribing research interviews, producing an audio option for students who need one.</dd></div>
+        <div><dt class="risk">How it breaks</dt><dd class="risk">Accuracy drops on discipline-specific terminology, on accented speech, and on overlapping voices, which means an auto-caption file is a draft and not a deliverable. Automatic summaries of a meeting can invent an agreement that was never reached. Synthetic narration of a technical reading mispronounces exactly the terms that matter.</dd></div>
+        <div><dt>What it costs</dt><dd>Basic transcription is free or cheap and metered by hours. Correction time is the real cost, and for compliance-grade captions it is not optional.</dd></div>
+      </dl>
+      <div class="note warn">
+        <h4>Consent, and voice cloning</h4>
+        <p>Recording students requires consent and, where the recording touches an education record, an appropriate agreement with the vendor. A meeting assistant that joins a call is a third party in the room, and everyone present should know it is there.</p>
+        <p>Cloning a colleague's voice, even for a convenience like narrating their slides, should be treated as off limits without explicit written permission. Cloning a voice to produce words the person never said is the kind of thing that ends careers, and consent is the only thing separating the two cases.</p>
+      </div>
+      <div class="try">
+        <p class="try-h">Try it in ten minutes</p>
+        <label class="chk"><input type="checkbox" data-k="c8"><span>Transcribe ten minutes of a recorded lecture, then count the errors in discipline-specific terms. That number tells you how much correction your captioning workflow actually needs.</span></label>
+      </div>
+      <p class="tools"><b>Tools, checked September 2026</b>ElevenLabs covers both directions, with Scribe for transcription across roughly ninety-nine languages and a leading text-to-speech product. Otter.ai is built around meetings and joins calls directly. Descript lets you edit recorded audio and video by editing its transcript, which is the fastest way to cut a lecture recording. Google's NotebookLM generates spoken overviews from documents you supply. Zoom, Teams, and Panopto all have captioning built in, and your institution may already pay for it.</p>
+    </article>
+
+    <article class="cap" id="c9">
+      <p class="cap-n">Capability 9</p>
+      <h3>Video</h3>
+      <p>The most oversold capability on this page. The demonstration clips are real, and the gap between those clips and a usable ten-minute teaching video is still very wide. Read this entry as expectation management as much as instruction.</p>
+      <ul>
+        <li><b>Text to video.</b> A described clip, generated. Practical length is roughly five to fifteen seconds; coherence degrades beyond about ten in most models.</li>
+        <li><b>Image to video.</b> A still you already have, given motion. More controllable than text to video and usually the better starting point.</li>
+        <li><b>Avatar presenters.</b> A synthetic person reading your script, with lip sync and multilingual output. The most institutionally useful branch, and the one that raises the most questions about disclosure.</li>
+        <li><b>Editing and repurposing.</b> Cutting a long recording into clips, adding captions, removing filler. This is where most of the actual value sits.</li>
+      </ul>
+      <dl class="facts4">
+        <div><dt>What it does</dt><dd>Generates short clips from text or from a still image, and produces talking-head video from a script.</dd></div>
+        <div><dt>When it is worth it</dt><dd>A short atmospheric or illustrative clip inside a longer lecture, an animated version of a process you already explain, a translated version of a standard orientation message, and cutting existing recordings into usable pieces.</dd></div>
+        <div><dt class="risk">How it breaks</dt><dd class="risk">Continuity across shots is still unreliable, so the same character or setting drifts between clips. On-screen text is not dependable. Physical and biological processes are rendered for plausibility rather than accuracy, which disqualifies generated video for most science demonstration. And cost is per second, so iteration is genuinely expensive.</dd></div>
+        <div><dt>What it costs</dt><dd>Roughly five to fifteen cents per second of generated video at current rates, before the clips you discard. A narrated slide sequence costs nothing and is frequently the better teaching artifact. Choose generated video when motion is the content, not when it is decoration.</dd></div>
+      </dl>
+      <div class="note flat">
+        <h4>A worked example of why tool names get dates</h4>
+        <p>Sora was the name everyone in higher education learned first. OpenAI discontinued the standalone Sora app in April 2026 and is retiring its API in September 2026, folding generation back into ChatGPT. Anyone who built a workflow or a workshop around that product name spent the spring rebuilding it. The capability did not change at all.</p>
+      </div>
+      <div class="try">
+        <p class="try-h">Try it in ten minutes</p>
+        <label class="chk"><input type="checkbox" data-k="c9"><span>Generate one eight-second clip of something you would otherwise show as a static slide, then decide honestly whether the motion taught anything the slide did not.</span></label>
+      </div>
+      <p class="tools"><b>Tools, checked September 2026</b>Google Veo 3.1 is the most widely accessible mainstream option and reaches most people through Gemini. Kling 3.0 is the value choice per second. Runway Gen-4.5 offers the most control over camera and character consistency. Open-weight models such as Wan are close behind the commercial frontier. For avatar presenters, Synthesia and HeyGen are the established products in corporate and educational training. Sora now exists only inside ChatGPT and is not a basis for a new workflow.</p>
+    </article>
+
+    <h2 class="part">Part 4. Documents, data, and code</h2>
+
+    <article class="cap" id="c10">
+      <p class="cap-n">Capability 10</p>
+      <h3>Working with documents you already have</h3>
+      <p>If you read only one entry on this page, read this one. For most faculty and staff this is the highest return for the lowest risk, because the model is answering from a document you supplied rather than from its training data, which removes most of the hallucination surface.</p>
+      <dl class="facts4">
+        <div><dt>What it does</dt><dd>Takes uploaded files and answers questions grounded in them: summarize a two-hundred-page report, find every mention of a term across a folder, compare two versions of a policy, extract a structured table from a PDF, draw a timeline out of a set of minutes.</dd></div>
+        <div><dt>When it is worth it</dt><dd>Accreditation documentation, a new handbook or collective agreement, a stack of papers you need to triage before reading properly, committee history nobody wants to reconstruct, grant guidelines, vendor contracts.</dd></div>
+        <div><dt class="risk">How it breaks</dt><dd class="risk">Scanned or image-only PDFs may be read badly or not at all. Tables and multi-column layouts get scrambled more often than you would expect. Grounding reduces fabrication but does not remove it, so a quoted passage still needs to be found in the original. And a summary that misses the one exception clause is worse than no summary.</dd></div>
+        <div><dt>What it costs</dt><dd>Upload limits and context length vary by plan. The genuine cost is privacy: see the note below, since documents are exactly where student and personnel records live.</dd></div>
+      </dl>
+      <div class="note warn">
+        <h4>The privacy question lives here</h4>
+        <p>This capability is the most useful one on the page and the one most likely to put you in breach. Student records, personnel files, unpublished manuscripts, manuscripts you are peer reviewing, and anything covered by a confidentiality agreement do not go into an unapproved tool. Check your institution's approved list before the first upload, not after.</p>
+      </div>
+      <div class="try">
+        <p class="try-h">Try it in ten minutes</p>
+        <label class="chk"><input type="checkbox" data-k="c10"><span>Upload a long public document you have been avoiding, such as a policy, an accreditation standard, or a funder's guidelines, and ask the five questions you would have had to read it to answer.</span></label>
+        <div class="prompt"><button class="copy">Copy</button><b>Starter prompt</b>Answer only from the attached document. For each answer, quote the sentence it comes from and give the page or section. If the document does not address the question, say so rather than inferring. Questions: [list them].</div>
+      </div>
+      <p class="tools"><b>Tools, checked September 2026</b>ChatGPT, Claude, Gemini, and Copilot all accept document uploads, with Claude and Gemini handling the longest documents. Google's NotebookLM is purpose-built for this: it restricts answers to the sources you add and links every claim back to the passage. Microsoft Copilot has the advantage of reading what is already in your institutional SharePoint and OneDrive, inside your tenant.</p>
+    </article>
+
+    <article class="cap" id="c11">
+      <p class="cap-n">Capability 11</p>
+      <h3>Data and spreadsheets</h3>
+      <p>Two distinct things get confused here: asking a model to write the formula or the code that processes your data, which works well, and asking a model to do arithmetic in its head, which does not.</p>
+      <dl class="facts4">
+        <div><dt>What it does</dt><dd>Writes spreadsheet formulas from a plain description, cleans inconsistent data, explains what a formula you inherited is doing, suggests the right chart, drafts a survey, and produces a first-pass thematic coding of open-ended responses.</dd></div>
+        <div><dt>When it is worth it</dt><dd>Course evaluation comments, enrollment and workload reports, assessment data for accreditation, event registration lists, any spreadsheet that someone built in 2014 and nobody understands.</dd></div>
+        <div><dt class="risk">How it breaks</dt><dd class="risk">A model asked for an average will produce a plausible number rather than the correct one unless it actually runs code. Insist on the formula or the script, then run it yourself. Coding of qualitative responses reproduces the model's assumptions about what matters, so it is a first pass to be checked, never a finding. And survey responses are often identifiable, which makes the privacy rule from capability 10 apply here too.</dd></div>
+        <div><dt>What it costs</dt><dd>Included in most assistants. Tools that run code on your data sit in paid tiers.</dd></div>
+      </dl>
+      <div class="try">
+        <p class="try-h">Try it in ten minutes</p>
+        <label class="chk"><input type="checkbox" data-k="c11"><span>Take a spreadsheet formula you copied from somewhere and never understood. Ask what it does, what breaks it, and for a clearer version.</span></label>
+        <div class="prompt"><button class="copy">Copy</button><b>Starter prompt</b>Explain what this formula does in plain language, name the conditions that would make it return a wrong answer rather than an error, and give me a clearer version with a short comment on each part.</div>
+      </div>
+      <p class="tools"><b>Tools, checked September 2026</b>Copilot in Excel and Gemini in Google Sheets work inside the file. ChatGPT and Claude can both run code on an uploaded dataset, which is what you want for anything numerical, because the answer comes from execution rather than from prediction.</p>
+    </article>
+
+    <article class="cap" id="c12">
+      <p class="cap-n">Capability 12</p>
+      <h3>Code without being a programmer</h3>
+      <p>This is the capability that has changed most for non-technical staff. Small automations that were previously not worth requesting from IT are now a fifteen-minute conversation.</p>
+      <dl class="facts4">
+        <div><dt>What it does</dt><dd>Writes short scripts to rename or sort files, generates a Google Apps Script to automate a form and sheet workflow, builds a small interactive web page or classroom activity, converts between file formats, and explains an error message in terms you can act on.</dd></div>
+        <div><dt>When it is worth it</dt><dd>Any task you do by hand more than monthly that follows fixed rules. Also for building a small interactive demonstration for a class, which is now genuinely within reach for people who do not program.</dd></div>
+        <div><dt class="risk">How it breaks</dt><dd class="risk">Code that runs is not code that is correct, and the failure is often silent: the wrong rows are processed and nothing errors. Never point a generated script at your only copy of anything. Do not paste institutional credentials, API keys, or connection strings into a chat window. And a script you cannot explain is a script you cannot maintain, which makes it a liability for whoever inherits your job.</dd></div>
+        <div><dt>What it costs</dt><dd>Free tiers are adequate for small scripts. Anything that touches institutional systems needs IT involvement regardless of who wrote it.</dd></div>
+      </dl>
+      <div class="try">
+        <p class="try-h">Try it in ten minutes</p>
+        <label class="chk"><input type="checkbox" data-k="c12"><span>Name one repetitive file or spreadsheet task you do monthly. Ask for a script, run it on copies, and check the output row by row the first time.</span></label>
+        <div class="prompt"><button class="copy">Copy</button><b>Starter prompt</b>I need to [task]. I am not a programmer and I am on [Windows or Mac]. Give me the simplest approach that works, tell me exactly where to paste it and what to click, and warn me about anything irreversible before I run it.</div>
+      </div>
+      <p class="tools"><b>Tools, checked September 2026</b>Any general assistant writes small scripts. ChatGPT and Claude can also run code and return finished files, which avoids installing anything. For work inside Google Workspace, ask for Apps Script.</p>
+    </article>
+
+    <h2 class="part">Part 5. Things that keep running</h2>
+
+    <article class="cap" id="c13">
+      <p class="cap-n">Capability 13</p>
+      <h3>Custom assistants</h3>
+      <p>Everything above is one conversation at a time. A custom assistant is the same capability with your instructions and your documents attached permanently, which turns a personal trick into something a department can share.</p>
+      <dl class="facts4">
+        <div><dt>What it does</dt><dd>Stores standing instructions, reference files, and a defined scope, so the assistant starts every conversation already knowing your context. Can be shared with a team or a class.</dd></div>
+        <div><dt>When it is worth it</dt><dd>An advising assistant loaded with your degree requirements and catalog. A course assistant that answers from your syllabus and readings only. A grant assistant holding a funder's guidelines. A departmental assistant that knows your local processes and drafts in your house style.</dd></div>
+        <div><dt class="risk">How it breaks</dt><dd class="risk">It becomes stale and nobody notices, which is worse than having no assistant, because people trust it. Attached documents age, requirements change, and the assistant keeps answering confidently from last year's catalog. Anything shared needs an owner and a review date. Student-facing assistants also need thought about what happens when it gets an advising question wrong.</dd></div>
+        <div><dt>What it costs</dt><dd>Creating usually requires a paid tier; using one may not. Sharing beyond your own account raises licensing and data questions that belong to IT.</dd></div>
+      </dl>
+      <div class="try">
+        <p class="try-h">Try it in ten minutes</p>
+        <label class="chk"><input type="checkbox" data-k="c13"><span>Build one for a question you answer repeatedly. Load the relevant documents, write the instructions, then test it with the three questions people actually ask and see where it is confidently wrong.</span></label>
+      </div>
+      <p class="tools"><b>Tools, checked September 2026</b>Custom GPTs in ChatGPT, Projects in Claude, Gems in Gemini, and agents in Copilot Studio all do a version of this. NotebookLM is the strictest about answering only from the sources you provide, which makes it a good fit where drifting off the documents would be a problem.</p>
+    </article>
+
+    <article class="cap" id="c14">
+      <p class="cap-n">Capability 14</p>
+      <h3>Agents and automation</h3>
+      <p>The newest and least settled capability. Everything previous produces a draft you inspect. An agent takes actions on its own: browsing, filling forms, sending messages, moving files, running multi-step tasks over minutes or hours. That shift, from producing to acting, is the whole risk.</p>
+      <dl class="facts4">
+        <div><dt>What it does</dt><dd>Executes a multi-step task with limited supervision, using tools and connections you grant it: your calendar, your mail, your drive, a browser.</dd></div>
+        <div><dt>When it is worth it</dt><dd>Genuinely repetitive multi-step work with low consequences and reversible results. Compiling a weekly digest, gathering information across many pages, preparing a file for you to review.</dd></div>
+        <div><dt class="risk">How it breaks</dt><dd class="risk">Errors compound rather than surface, because step four is built on step two being right. An agent with mailbox access can send something on your behalf. Instructions hidden in a webpage or an attachment can redirect what it does, which is a real attack and not a hypothetical one. And an agent granted access to your account is an agent granted access to every student record in it.</dd></div>
+        <div><dt>What it costs</dt><dd>The highest tiers, and considerably more attention than the marketing suggests. Grant the narrowest access that works, and require confirmation before anything is sent, deleted, or paid.</dd></div>
+      </dl>
+      <div class="note warn">
+        <h4>The question to ask before granting access</h4>
+        <p>Not what can it do, but what is the worst thing it can do without asking me. If the answer involves sending a message to a student, deleting a file, or submitting a form, do not grant that access until the tool is on your institution's approved list and someone other than you has looked at the permissions.</p>
+      </div>
+      <div class="try">
+        <p class="try-h">Try it in ten minutes</p>
+        <label class="chk"><input type="checkbox" data-k="c14"><span>Give an agent a read-only task with no account access, such as gathering information from a set of public pages, and watch every step it takes. Note where you would not have caught a mistake.</span></label>
+      </div>
+      <p class="tools"><b>Tools, checked September 2026</b>Agent modes exist in ChatGPT, Claude, Gemini, and Copilot, with browser-based agents from several vendors. Capability and naming in this category are changing faster than anywhere else on this page, so treat any specific claim here as provisional.</p>
+    </article>
+
+    <h2 class="part">Before you go</h2>
+
+    <section class="block" id="before">
+      <h3>Before you use any of this</h3>
+      <p>Six questions, in order. The first one is not optional, and the rest are the agenda for the conversation that follows if you cannot answer it.</p>
+      <ul>
+        <li>Is this tool on my institution's approved list, and what agreement covers our data?</li>
+        <li>Am I about to enter student records, personnel information, unpublished work, or anything under confidentiality?</li>
+        <li>Does this tier use my inputs to improve the vendor's models?</li>
+        <li>What happens if the output is wrong, and would anyone notice before it reached someone?</li>
+        <li>Would a colleague or student without a paid subscription be able to do this?</li>
+        <li>Does anyone need to be told that AI was involved, and have I told them?</li>
+      </ul>
+      <p>The verification rule from the literacy course applies to everything above without exception. These systems are equally confident when they are right and when they are inventing, so confidence carries no information and checking carries all of it.</p>
+    </section>
+
+    <section class="block" id="aging">
+      <div class="stale">
+        <h4>How this page ages</h4>
+        <p>The fourteen capabilities are stable. They have been recognizable categories for some time and will still be recognizable in two years, even as the systems behind them improve.</p>
+        <p>The product names are not stable. Sora, which was the name most people in higher education learned first, was discontinued as a standalone product within eighteen months of becoming famous. Expect a comparable share of the names here to be wrong within a year.</p>
+        <p>So read the four-line summaries as durable and the tools lines as a snapshot. If you maintain this page, update the tools lines and leave the rest alone. Tool names last checked September 2026.</p>
+      </div>
+    </section>
+
+  </div>
+  </main>
+</div>
+
+<footer>
+  <div class="row">
+    <span>General guidance for higher education. Your institution's policies on data, procurement, and academic integrity govern where they differ.</span>
+    <button class="linkish" id="resetBtn">Reset my checklist</button>
+  </div>
+</footer>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+  "use strict";
+
+  var KEY = "genai_capabilities_v1";
+
+  var store = (function(){
+    var mem = {}, ok = false;
+    try{
+      window.localStorage.setItem("__probe","1");
+      window.localStorage.removeItem("__probe");
+      ok = true;
+    }catch(e){ ok = false; }
+    return {
+      persistent: ok,
+      get: function(k){ try{ return ok ? window.localStorage.getItem(k) : (k in mem ? mem[k] : null); }catch(e){ return null; } },
+      set: function(k,v){ try{ if(ok) window.localStorage.setItem(k,v); else mem[k]=v; }catch(e){ mem[k]=v; } },
+      del: function(k){ try{ if(ok) window.localStorage.removeItem(k); else delete mem[k]; }catch(e){ delete mem[k]; } }
+    };
+  })();
+
+  var boxes = Array.prototype.slice.call(document.querySelectorAll(".chk input[type=checkbox]"));
+  var checked = {};
+
+  function load(){
+    var raw = store.get(KEY);
+    if(!raw) return;
+    try{ checked = JSON.parse(raw) || {}; }catch(e){ checked = {}; }
+  }
+  function save(){ store.set(KEY, JSON.stringify(checked)); }
+
+  var toastTimer;
+  function toast(msg){
+    var el = document.getElementById("toast");
+    el.textContent = msg; el.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ el.classList.remove("show"); }, 2600);
+  }
+
+  function paint(){
+    var n = 0;
+    boxes.forEach(function(b){
+      var on = !!checked[b.dataset.k];
+      b.checked = on;
+      if(on) n++;
+      var link = document.querySelector('.rail a[href="#' + b.dataset.k + '"]');
+      if(link) link.classList.toggle("did", on);
+    });
+    document.getElementById("meterText").textContent = n + " of " + boxes.length + " tried";
+    document.getElementById("meterFill").style.width = (n / boxes.length * 100) + "%";
+  }
+
+  boxes.forEach(function(b){
+    b.addEventListener("change", function(){
+      if(b.checked) checked[b.dataset.k] = true; else delete checked[b.dataset.k];
+      save(); paint();
+    });
+  });
+
+  document.getElementById("resetBtn").addEventListener("click", function(){
+    checked = {}; store.del(KEY); paint(); toast("Checklist cleared");
+  });
+
+  /* copy buttons on starter prompts */
+  Array.prototype.forEach.call(document.querySelectorAll(".copy"), function(btn){
+    btn.addEventListener("click", function(){
+      var box = btn.parentNode.cloneNode(true);
+      var strip = box.querySelector(".copy"); if(strip) strip.remove();
+      var label = box.querySelector("b"); if(label) label.remove();
+      var text = box.textContent.trim();
+      function done(){ var o = btn.textContent; btn.textContent = "Copied"; setTimeout(function(){ btn.textContent = o; }, 1600); }
+      if(navigator.clipboard && navigator.clipboard.writeText){
+        navigator.clipboard.writeText(text).then(done, function(){ toast("Copy blocked, select the text instead"); });
+      } else {
+        toast("Copy is unavailable here, select the text instead");
+      }
+    });
+  });
+
+  /* highlight the section currently in view */
+  var links = Array.prototype.slice.call(document.querySelectorAll(".rail a"));
+  var targets = links.map(function(a){ return document.querySelector(a.getAttribute("href")); }).filter(Boolean);
+  if("IntersectionObserver" in window && targets.length){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(en){
+        if(!en.isIntersecting) return;
+        links.forEach(function(a){ a.classList.toggle("on", a.getAttribute("href") === "#" + en.target.id); });
+      });
+    }, { rootMargin: "-80px 0px -70% 0px", threshold: 0 });
+    targets.forEach(function(t){ io.observe(t); });
+  }
+
+  load();
+  paint();
+  if(!store.persistent){ toast("Checklist will not be saved in this browser context"); }
+})();
+</script>
+</body>
+</html>
